@@ -1,0 +1,15 @@
+[package]
+name = "passguardian-core"
+description = "Client-side cryptography, vault format, password generator and TOTP for PassGuardian"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+license = "MPL-2.0"
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
