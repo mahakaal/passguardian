@@ -6,6 +6,8 @@
 //!
 //! Roadmap: Sprint 3 adds PostgreSQL and migrations.
 
+use std::future::{ready, Future};
+
 use passguardian_server_domain::{ports::StorageProbe, DomainError};
 
 /// Placeholder storage that is always reachable. Stands in until PostgreSQL arrives (Sprint 3).
@@ -13,8 +15,8 @@ use passguardian_server_domain::{ports::StorageProbe, DomainError};
 pub struct NoopStorage;
 
 impl StorageProbe for NoopStorage {
-    async fn ping(&self) -> Result<(), DomainError> {
-        Ok(())
+    fn ping(&self) -> impl Future<Output = Result<(), DomainError>> + Send {
+        ready(Ok(()))
     }
 }
 
