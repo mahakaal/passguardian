@@ -1,0 +1,20 @@
+[package]
+name = "passguardian-cli"
+description = "Command-line client to exercise the core and the server"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+license = "AGPL-3.0-or-later"
+publish = false
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "passguardian"
+path = "src/main.rs"
+
+[dependencies]
+passguardian-core = { workspace = true }
