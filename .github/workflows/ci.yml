@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: fmt, clippy, test, layering
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: passguardian
+          POSTGRES_PASSWORD: passguardian
+          POSTGRES_DB: passguardian_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U passguardian"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      # Used by the data-layer tests once they arrive (Sprint 3).
+      TEST_DATABASE_URL: postgres://passguardian:passguardian@localhost:5432/passguardian_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: bash scripts/check-layering.sh
+
+  deny:
+    name: cargo-deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+
+  dco:
+    name: DCO (Signed-off-by)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check Signed-off-by on every commit of the PR
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          missing=0
+          for c in $(git rev-list --no-merges "$base..$head"); do
+            if ! git show -s --format=%B "$c" | grep -qE '^Signed-off-by: .+ <.+@.+>$'; then
+              echo "Missing Signed-off-by in commit $c"; missing=1
+            fi
+          done
+          exit $missing
