@@ -14,7 +14,7 @@ members = [
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.85"
-repository = "https://github.com/CHANGE-ME/passguardian"
+repository = "https://github.com/mahakaal/passguardian"
 authors = ["PassGuardian contributors"]
 
 [workspace.dependencies]
