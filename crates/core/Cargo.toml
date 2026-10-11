@@ -16,3 +16,4 @@ workspace = true
 argon2 = { workspace = true }
 thiserror = { workspace = true }
 zeroize = { workspace = true }
+kdf = "0.1.0"
