@@ -1,0 +1,21 @@
+[package]
+name = "passguardian-server-domain"
+description = "Server domain: entities, services and repository traits. No I/O."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+license = "AGPL-3.0-or-later"
+publish = false
+
+[lints]
+workspace = true
+
+# RULE: this crate must not depend on axum, sqlx, hyper, reqwest or tokio with I/O.
+# The rule is enforced by scripts/check-layering.sh in CI.
+[dependencies]
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
