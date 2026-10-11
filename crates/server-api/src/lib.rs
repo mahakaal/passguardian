@@ -23,6 +23,8 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::future::{ready, Future};
+
     use axum::{body::Body, http::Request, http::StatusCode};
     use http_body_util::BodyExt;
     use passguardian_proto::HealthResponse;
@@ -35,8 +37,8 @@ mod tests {
     struct Down;
 
     impl StorageProbe for Down {
-        async fn ping(&self) -> Result<(), DomainError> {
-            Err(DomainError::Unavailable)
+        fn ping(&self) -> impl Future<Output = Result<(), DomainError>> + Send {
+            ready(Err(DomainError::Unavailable))
         }
     }
 
