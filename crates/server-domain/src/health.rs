@@ -30,20 +30,22 @@ impl<S: StorageProbe> HealthService<S> {
 
 #[cfg(test)]
 mod tests {
+    use std::future::{ready, Future};
+
     use super::*;
 
     struct Up;
     struct Down;
 
     impl StorageProbe for Up {
-        async fn ping(&self) -> Result<(), DomainError> {
-            Ok(())
+        fn ping(&self) -> impl Future<Output = Result<(), DomainError>> + Send {
+            ready(Ok(()))
         }
     }
 
     impl StorageProbe for Down {
-        async fn ping(&self) -> Result<(), DomainError> {
-            Err(DomainError::Unavailable)
+        fn ping(&self) -> impl Future<Output = Result<(), DomainError>> + Send {
+            ready(Err(DomainError::Unavailable))
         }
     }
 

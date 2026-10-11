@@ -7,7 +7,7 @@ The project is in an early phase and **has not been audited**. Do not use it for
 
 ## How to report a vulnerability
 **Do not open a public issue.** Use GitHub's *Report a vulnerability* feature (Security advisories)
-or write to `CHANGE-ME@example.org` (to be replaced before publication).
+or write to `sukhdev.mohan@gmail.com`.
 
 Please include: description, steps to reproduce, estimated impact, version.
 
