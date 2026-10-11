@@ -1,0 +1,26 @@
+[package]
+name = "passguardian-server"
+description = "PassGuardian server binary: configuration and wiring of the layers"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+license = "AGPL-3.0-or-later"
+publish = false
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "passguardian-server"
+path = "src/main.rs"
+
+[dependencies]
+passguardian-server-api = { workspace = true }
+passguardian-server-data = { workspace = true }
+passguardian-server-domain = { workspace = true }
+axum = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
