@@ -1,0 +1,19 @@
+[package]
+name = "passguardian-server-data"
+description = "Server data layer: implements the domain ports (sqlx arrives in Sprint 3)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+license = "AGPL-3.0-or-later"
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+passguardian-server-domain = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
