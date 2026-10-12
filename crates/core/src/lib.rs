@@ -8,11 +8,13 @@
 
 mod aead;
 pub mod error;
+pub mod format;
 pub mod item;
 pub mod kdf;
 pub mod vault_key;
 
 pub use error::CryptoError;
+pub use format::{FormatError, VaultDocument, VaultRecord};
 pub use item::{decrypt_item, encrypt_item, EncryptedItem};
 pub use kdf::{derive_master_key, KdfParams, MasterKey};
 pub use vault_key::{VaultKey, WrappedVaultKey};
