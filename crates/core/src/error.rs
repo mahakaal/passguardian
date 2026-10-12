@@ -20,4 +20,18 @@ pub enum CryptoError {
     /// The key derivation itself failed.
     #[error("key derivation failed")]
     KeyDerivation,
+    /// The operating system could not provide random bytes.
+    #[error("random number generator unavailable")]
+    Randomness,
+    /// Encryption failed.
+    #[error("encryption failed")]
+    Encryption,
+    /// The data is too short or not shaped like ciphertext produced by this crate.
+    #[error("malformed ciphertext")]
+    MalformedCiphertext,
+    /// Authentication failed: wrong key, wrong context, or the data was modified.
+    ///
+    /// Deliberately carries no detail about which of those it was.
+    #[error("decryption failed")]
+    Decryption,
 }

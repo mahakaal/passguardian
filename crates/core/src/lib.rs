@@ -6,11 +6,14 @@
 //! Status: Sprint 1 in progress. Key derivation is in place; vault key wrapping, item
 //! encryption, vault format, generator and TOTP follow.
 
+mod aead;
 pub mod error;
 pub mod kdf;
+pub mod vault_key;
 
 pub use error::CryptoError;
 pub use kdf::{derive_master_key, KdfParams, MasterKey};
+pub use vault_key::{VaultKey, WrappedVaultKey};
 
 /// Version of the serialized vault format.
 ///
