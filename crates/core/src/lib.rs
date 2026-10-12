@@ -9,6 +9,7 @@
 mod aead;
 pub mod error;
 pub mod format;
+pub mod generator;
 pub mod item;
 pub mod kdf;
 pub mod vault_key;
