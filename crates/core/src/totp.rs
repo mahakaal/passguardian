@@ -7,9 +7,6 @@
 //! The current time is always a parameter (`unix_time`), never read from the system clock, so
 //! every function here is deterministic and testable against the official vectors.
 
-// Exercise scaffolding: remove this line once all five functions are implemented.
-#![allow(unused_variables, dead_code)]
-
 use hmac::digest::KeyInit;
 use hmac::{Hmac, Mac};
 use sha1::Sha1;
@@ -76,13 +73,13 @@ fn hmac_digest(algorithm: Algorithm, secret: &[u8], message: &[u8]) -> Result<Ve
 ///
 /// [`TotpError::DigestTooShort`] if the digest is empty or the four bytes at `offset` do not fit.
 pub fn dynamic_truncate(digest: &[u8]) -> Result<u32, TotpError> {
-    // TODO(step 1):
-    //  - the last byte of `digest` is `digest.last()` (an `Option`: turn `None` into the error
-    //    with `.ok_or(...)?`); the offset is `last & 0x0f`, converted with `usize::from`;
-    //  - the four bytes are `digest.get(offset..offset + 4)` (again an `Option`);
-    //  - turn that slice into `[u8; 4]` with `<[u8; 4]>::try_from(slice)`, then
-    //    `u32::from_be_bytes(...)`, then clear the top bit with `& 0x7fff_ffff`.
-    todo!("step 1")
+    let last_byte = digest.last().copied().ok_or(TotpError::DigestTooShort)?;
+    let offset = usize::from(last_byte & 0x0f);
+    let window = digest
+        .get(offset..offset + 4)
+        .ok_or(TotpError::DigestTooShort)?;
+    let bytes = <[u8; 4]>::try_from(window).map_err(|_| TotpError::DigestTooShort)?;
+    Ok(u32::from_be_bytes(bytes) & 0x7fff_ffff)
 }
 
 /// Reduces a truncated value to `digits` decimal digits, with leading zeros kept
@@ -92,11 +89,12 @@ pub fn dynamic_truncate(digest: &[u8]) -> Result<u32, TotpError> {
 ///
 /// [`TotpError::InvalidDigits`] unless `digits` is 6, 7 or 8.
 pub fn format_code(value: u32, digits: u32) -> Result<String, TotpError> {
-    // TODO(step 2):
-    //  - reject `digits` outside 6..=8 (`(6..=8).contains(&digits)`);
-    //  - `value % 10_u32.pow(digits)` keeps the last `digits` digits;
-    //  - zero-padded formatting: `format!("{code:0width$}", width = digits as usize)`.
-    todo!("step 2")
+    if !(6..=8).contains(&digits) {
+        return Err(TotpError::InvalidDigits);
+    }
+
+    let code = value % 10_u32.pow(digits);
+    Ok(format!("{code:0width$}", width = digits as usize))
 }
 
 /// The TOTP counter: how many whole `period`-second steps fit in `unix_time`.
@@ -105,11 +103,9 @@ pub fn format_code(value: u32, digits: u32) -> Result<String, TotpError> {
 ///
 /// [`TotpError::InvalidPeriod`] if `period` is zero.
 pub fn time_step(unix_time: u64, period: u64) -> Result<u64, TotpError> {
-    // TODO(step 3):
-    //  - it is a division, but `period == 0` must be an error, not a crash;
-    //  - `u64` has `checked_div`, which returns `None` on division by zero: combine it with
-    //    `.ok_or(...)`.
-    todo!("step 3")
+    unix_time
+        .checked_div(period)
+        .ok_or(TotpError::InvalidPeriod)
 }
 
 /// HOTP (RFC 4226): the one-time code for a given `counter`.
@@ -126,12 +122,12 @@ pub fn hotp(
     counter: u64,
     digits: u32,
 ) -> Result<String, TotpError> {
-    // TODO(step 4):
-    //  - empty secret → `EmptySecret`;
-    //  - the message for the HMAC is the counter as 8 big-endian bytes: `&counter.to_be_bytes()`;
-    //  - `hmac_digest(...)?` gives the digest; pass it to `dynamic_truncate`, then to
-    //    `format_code` (this last call can be the final expression of the function).
-    todo!("step 4")
+    if secret.is_empty() {
+        return Err(TotpError::EmptySecret);
+    }
+
+    let digest = &hmac_digest(algorithm, secret, &counter.to_be_bytes())?;
+    format_code(dynamic_truncate(digest)?, digits)
 }
 
 /// TOTP (RFC 6238): the code valid at `unix_time` (seconds since 1970-01-01 UTC) for codes that
@@ -147,9 +143,8 @@ pub fn totp(
     period: u64,
     digits: u32,
 ) -> Result<String, TotpError> {
-    // TODO(step 5): two lines at most. Turn the time into a counter with `time_step`, then
-    // call `hotp` with it. Use `?` where an error can come out.
-    todo!("step 5")
+    let counter = time_step(unix_time, period)?;
+    hotp(algorithm, secret, counter, digits)
 }
 
 #[cfg(test)]
