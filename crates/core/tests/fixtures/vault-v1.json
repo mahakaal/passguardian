@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "kdf": {
+    "memory_kib": 64,
+    "iterations": 2,
+    "parallelism": 1
+  },
+  "salt": "MDEyMzQ1Njc4OWFiY2RlZg==",
+  "wrapped_vault_key": "ilVBHhpTHAE8r+WaLMR877kyPN+K6rGbA/Z1mEF3WnnSBm1wOGTpnZB/qfTLcRZQxMAE6I3BFv44GM24TmYSa0ebZbgC8A/M",
+  "items": [
+    {
+      "id": "login-github",
+      "data": "bsxvQXhfQAOnvYU0EURbp5e9PMKnHpkp3mUowhYlOuDayAiaSxiry1EtW3KPb2oExAtGnrqWbDkLRYwctU0VB38i7XdB55QUIWMVIVdgx+jUk8EXg0GcHqjJ7XOWErz7"
+    },
+    {
+      "id": "note-1",
+      "data": "jXQEcldIpLP6umI321cFw52MZZaTG5yVWCgOFMKxd2KWgfP5f2L+VtsySjhNSnXEC4923iY="
+    }
+  ]
+}

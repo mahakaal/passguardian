@@ -3,7 +3,23 @@
 //! This crate runs on the client (desktop, mobile, browser extension via WASM).
 //! The server never uses it to decrypt: it only ever sees ciphertext.
 //!
-//! Status: skeleton (Sprint 0). Crypto, vault format, generator and TOTP arrive in Sprint 1.
+//! Status: Sprint 1 in progress. Key derivation is in place; vault key wrapping, item
+//! encryption, vault format, generator and TOTP follow.
+
+mod aead;
+pub mod error;
+pub mod format;
+pub mod generator;
+pub mod item;
+pub mod kdf;
+pub mod totp;
+pub mod vault_key;
+
+pub use error::CryptoError;
+pub use format::{FormatError, VaultDocument, VaultRecord};
+pub use item::{decrypt_item, encrypt_item, EncryptedItem};
+pub use kdf::{derive_master_key, KdfParams, MasterKey};
+pub use vault_key::{VaultKey, WrappedVaultKey};
 
 /// Version of the serialized vault format.
 ///
