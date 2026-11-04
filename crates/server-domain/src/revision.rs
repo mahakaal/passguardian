@@ -1,8 +1,5 @@
 //! Revision counter used for optimistic concurrency and for sync.
 
-// TODO(PG-23): remove this line once the `todo!()` bodies are implemented.
-#![allow(unused_variables)]
-
 use crate::DomainError;
 
 /// A monotonically increasing revision number.
@@ -19,18 +16,21 @@ impl Revision {
     /// Wraps a raw counter value (for example one read from storage).
     #[must_use]
     pub fn new(value: u64) -> Self {
-        todo!()
+        Self(value)
     }
 
     /// The raw counter value.
     #[must_use]
     pub fn get(self) -> u64 {
-        todo!()
+        self.0
     }
 
     /// The revision that follows this one.
     pub fn next(self) -> Result<Self, DomainError> {
-        todo!()
+        self.0
+            .checked_add(1)
+            .ok_or(DomainError::RevisionOverflow)
+            .map(Revision::new)
     }
 }
 
