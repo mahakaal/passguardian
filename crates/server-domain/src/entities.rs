@@ -300,7 +300,7 @@ mod tests {
         let (id, owner) = (cipher.id(), cipher.user_id());
         cipher.delete(Revision::new(6));
         assert!(cipher.is_deleted());
-        assert!(cipher.data().is_empty());
+        assert_eq!(cipher.data(), []);
         assert_eq!(cipher.folder_id(), None);
         assert_eq!(cipher.revision(), Revision::new(6));
         assert_eq!((cipher.id(), cipher.user_id()), (id, owner));
