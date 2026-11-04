@@ -32,6 +32,14 @@ If both pass, the domain is truly independent of storage.
 - `frozen_v1_vault_still_loads_and_decrypts`: a committed version-1 vault must open with every future build (ADR 0005).
 
 ## Sprint 2 – Server domain (write first, with fakes)
+Entities and value objects (PG-23):
+- Typed identifiers: roundtrip with `Uuid`, `Display` is hyphenated lowercase, `FromStr` rejects non-UUID text.
+- `Email`: trimmed and lowercased, malformed addresses rejected, 254-character limit.
+- `Revision`: ordered, `next` adds one and fails instead of wrapping around.
+- `Device`: name trimmed and bounded, revocation is permanent and idempotent.
+- `Cipher`: deleting leaves a tombstone with no data and no folder, keeping id, owner and the new revision.
+
+Services:
 - `register_creates_user_and_first_device`
 - `register_with_existing_email_fails_without_leaking_which_field`
 - `login_with_wrong_credentials_is_indistinguishable_from_unknown_user` (same error, same shape)

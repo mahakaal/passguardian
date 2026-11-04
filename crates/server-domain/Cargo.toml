@@ -16,6 +16,7 @@ workspace = true
 # The rule is enforced by scripts/check-layering.sh in CI.
 [dependencies]
 thiserror = { workspace = true }
+uuid = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true }
