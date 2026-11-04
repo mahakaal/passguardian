@@ -28,7 +28,8 @@ If both pass, the domain is truly independent of storage.
 - `unknown_format_version_is_rejected` and `old_format_version_is_migrated`.
 - `secrets_are_zeroized_on_drop` (where measurable).
 - Generator: `password_has_requested_length_and_classes`, `no_modulo_bias` (uniform distribution over the alphabet), `passphrase_uses_wordlist`.
-- TOTP: official RFC 6238 vectors (SHA1/SHA256/SHA512).
+- TOTP: official RFC 6238 vectors (SHA1/SHA256/SHA512) and RFC 4226 vectors for HOTP.
+- `frozen_v1_vault_still_loads_and_decrypts`: a committed version-1 vault must open with every future build (ADR 0005).
 
 ## Sprint 2 – Server domain (write first, with fakes)
 - `register_creates_user_and_first_device`
