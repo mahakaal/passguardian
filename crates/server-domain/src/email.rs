@@ -1,8 +1,5 @@
 //! Email address, validated and normalised once at the edge of the domain.
 
-// TODO(PG-23): remove this line once the `todo!()` bodies are implemented.
-#![allow(unused_variables)]
-
 use crate::DomainError;
 
 /// Longest address accepted (RFC 5321 limit).
@@ -19,7 +16,29 @@ pub struct Email(String);
 impl Email {
     /// Validates and normalises `raw`.
     pub fn parse(raw: &str) -> Result<Self, DomainError> {
-        todo!()
+        let normalized = raw.trim().to_lowercase();
+
+        if normalized.chars().any(char::is_whitespace) {
+            return Err(DomainError::InvalidEmail);
+        }
+
+        let (local, domain) = normalized
+            .split_once('@')
+            .ok_or(DomainError::InvalidEmail)?;
+
+        if local.is_empty() {
+            return Err(DomainError::InvalidEmail);
+        }
+
+        if domain.is_empty() || domain.contains('@') {
+            return Err(DomainError::InvalidEmail);
+        }
+
+        if normalized.len() > MAX_EMAIL_LEN {
+            return Err(DomainError::InvalidEmail);
+        }
+
+        Ok(Self(normalized))
     }
 
     /// The normalised address.
