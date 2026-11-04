@@ -11,10 +11,18 @@ Thank you! The project is designed to be maintained by the community.
 6. **Commit messages** follow [Conventional Commits](https://www.conventionalcommits.org/) in English, one logical change per commit.
 
 ## Workflow
-```bash
-bash scripts/verify.sh   # fmt, clippy, tests, layering, cargo-deny
-```
-Open small, focused PRs. For important architectural decisions add an ADR in `docs/adr/`.
+The project is **trunk-based** ([ADR 0006](docs/adr/0006-trunk-based-development.md)): `main` is the only long-lived branch and is always green.
+
+1. Cut a short-lived branch from `main`, named `<type>/<topic>` (for example `feat/totp-base32`).
+2. Write the failing test first, then the code. Before pushing, run:
+   ```bash
+   bash scripts/verify.sh   # fmt, clippy, tests, layering, cargo-deny
+   ```
+3. Open a **small, focused pull request** against `main`. Its title is a Conventional Commit; end the description with `Refs: PG-nn` when there is a Jira task.
+4. Merge when the required checks are green (`fmt, clippy, test, layering`, `cargo-deny`, `DCO (Signed-off-by)`): squash for one logical change, rebase when each commit stands on its own.
+5. Unfinished work is merged in small steps but not exposed (not wired to an API, command or UI).
+
+For important architectural decisions add an ADR in `docs/adr/`.
 
 ## Licenses
 - `crates/core`, `crates/proto`: MPL-2.0
