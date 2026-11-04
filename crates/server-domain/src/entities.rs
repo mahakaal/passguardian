@@ -3,9 +3,6 @@
 //! The server only ever sees ciphertext: `Cipher::data` and `Folder::name` are opaque bytes
 //! produced by the client (ADR 0003). The domain never interprets them.
 
-// TODO(PG-23): remove this line once the `todo!()` bodies are implemented.
-#![allow(unused_variables)]
-
 use crate::{CipherId, DeviceId, DomainError, Email, FolderId, Revision, UserId};
 
 /// Longest device name accepted, in characters.
@@ -51,18 +48,28 @@ impl Device {
     /// Creates an active device. The name is trimmed and must be 1 to
     /// [`MAX_DEVICE_NAME_LEN`] characters long once trimmed.
     pub fn new(id: DeviceId, user_id: UserId, name: &str) -> Result<Self, DomainError> {
-        todo!()
+        let normalized = name.trim();
+        if normalized.is_empty() || normalized.chars().count() > MAX_DEVICE_NAME_LEN {
+            return Err(DomainError::InvalidName);
+        }
+
+        Ok(Self {
+            id,
+            user_id,
+            name: String::from(normalized),
+            revoked: false,
+        })
     }
 
     /// Marks the device as revoked. Revoking twice is harmless.
     pub fn revoke(&mut self) {
-        todo!()
+        self.revoked = true;
     }
 
     /// Whether the device has been revoked.
     #[must_use]
     pub fn is_revoked(&self) -> bool {
-        todo!()
+        self.revoked
     }
 
     /// The device's identifier.
@@ -156,13 +163,16 @@ impl Cipher {
     /// Turns the cipher into a tombstone changed at `revision`: the data is dropped and the
     /// cipher no longer belongs to a folder.
     pub fn delete(&mut self, revision: Revision) {
-        todo!()
+        self.revision = revision;
+        self.deleted = true;
+        self.data.clear();
+        self.folder_id = None;
     }
 
     /// Whether the cipher is a tombstone.
     #[must_use]
     pub fn is_deleted(&self) -> bool {
-        todo!()
+        self.deleted
     }
 
     /// The cipher's identifier.
