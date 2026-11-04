@@ -4,9 +4,6 @@
 //! where a `DeviceId` is expected. They wrap a UUID but never generate one: randomness is
 //! an input of the domain, not something it produces (see the `Clock` port in PG-24).
 
-// TODO(PG-23): remove this line once the `todo!()` bodies are implemented.
-#![allow(unused_variables)]
-
 use std::{fmt, str::FromStr};
 
 use uuid::Uuid;
@@ -21,19 +18,19 @@ impl UserId {
     /// Wraps an existing UUID.
     #[must_use]
     pub fn from_uuid(uuid: Uuid) -> Self {
-        todo!()
+        Self(uuid)
     }
 
     /// Returns the underlying UUID.
     #[must_use]
     pub fn as_uuid(&self) -> Uuid {
-        todo!()
+        self.0
     }
 }
 
 impl fmt::Display for UserId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        write!(f, "{}", self.0)
     }
 }
 
@@ -41,7 +38,9 @@ impl FromStr for UserId {
     type Err = DomainError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
+        Uuid::parse_str(s)
+            .map_err(|_| DomainError::InvalidId)
+            .map(Self::from_uuid)
     }
 }
 
@@ -53,19 +52,19 @@ impl DeviceId {
     /// Wraps an existing UUID.
     #[must_use]
     pub fn from_uuid(uuid: Uuid) -> Self {
-        todo!()
+        Self(uuid)
     }
 
     /// Returns the underlying UUID.
     #[must_use]
     pub fn as_uuid(&self) -> Uuid {
-        todo!()
+        self.0
     }
 }
 
 impl fmt::Display for DeviceId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        write!(f, "{}", self.0)
     }
 }
 
@@ -73,7 +72,9 @@ impl FromStr for DeviceId {
     type Err = DomainError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
+        Uuid::parse_str(s)
+            .map_err(|_| DomainError::InvalidId)
+            .map(Self::from_uuid)
     }
 }
 
@@ -85,19 +86,19 @@ impl CipherId {
     /// Wraps an existing UUID.
     #[must_use]
     pub fn from_uuid(uuid: Uuid) -> Self {
-        todo!()
+        Self(uuid)
     }
 
     /// Returns the underlying UUID.
     #[must_use]
     pub fn as_uuid(&self) -> Uuid {
-        todo!()
+        self.0
     }
 }
 
 impl fmt::Display for CipherId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        write!(f, "{}", self.0)
     }
 }
 
@@ -105,7 +106,9 @@ impl FromStr for CipherId {
     type Err = DomainError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
+        Uuid::parse_str(s)
+            .map_err(|_| DomainError::InvalidId)
+            .map(Self::from_uuid)
     }
 }
 
@@ -117,19 +120,19 @@ impl FolderId {
     /// Wraps an existing UUID.
     #[must_use]
     pub fn from_uuid(uuid: Uuid) -> Self {
-        todo!()
+        Self(uuid)
     }
 
     /// Returns the underlying UUID.
     #[must_use]
     pub fn as_uuid(&self) -> Uuid {
-        todo!()
+        self.0
     }
 }
 
 impl fmt::Display for FolderId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        write!(f, "{}", self.0)
     }
 }
 
@@ -137,7 +140,9 @@ impl FromStr for FolderId {
     type Err = DomainError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
+        Uuid::parse_str(s)
+            .map_err(|_| DomainError::InvalidId)
+            .map(Self::from_uuid)
     }
 }
 
