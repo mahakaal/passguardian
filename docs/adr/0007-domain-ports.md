@@ -7,7 +7,7 @@
 **Decision.**
 - Ports are traits in `server-domain::ports`, using `impl Future + Send` as `StorageProbe` already does (no `async-trait`, no dynamic dispatch). Services are generic over them.
 - **Every query names the owner.** `DeviceRepository::find`, `CipherRepository::find` and `changes_since` take a `UserId`; a row of another user is reported as not found, never as forbidden. Isolation (PG-27) is therefore structural, not a check someone can forget.
-- **Optimistic concurrency.** `CipherRepository::update` takes the revision the caller read and fails with `DomainError::Conflict` if the stored one differs. The API maps it to `409`.
+- **Optimistic concurrency.** `CipherRepository::update` takes the revision the caller read and fails with `DomainError::Conflict` if the stored one differs. The API maps it to `409`. An update that matches no row of that owner (missing, or another user's) fails the same way, so it reveals nothing about other users' data.
 - **Revisions.** Each user has one counter. `UserRepository::bump_revision` increments it atomically and returns the new value; a service bumps it once per change and stamps the cipher with it. `changes_since(user, rev)` returns every cipher with a higher revision, tombstones included, in increasing order.
 - **Unique email.** `UserRepository::insert` fails with `Conflict` when the email exists. The service must not tell the caller which field clashed.
 - **Transactions belong to the domain.** `UnitOfWork::begin` returns a `Transaction` that implements the three repositories; `commit(self)` makes the changes permanent and dropping it rolls back. A service that must write a cipher and bump the revision together does both inside one transaction.

@@ -39,6 +39,20 @@ Entities and value objects (PG-23):
 - `Device`: name trimmed and bounded, revocation is permanent and idempotent.
 - `Cipher`: deleting leaves a tombstone with no data and no folder, keeping id, owner and the new revision.
 
+Port contract (PG-26), in `server-domain::testing::contract`; the same suite runs on the in-memory fake now and on PostgreSQL in Sprint 3 (`repository_contract_tests!`):
+- `inserted_user_is_found_by_id_and_email`
+- `user_with_taken_email_conflicts`
+- `unknown_user_is_not_found`
+- `user_revision_starts_at_zero_and_increments_by_one`
+- `inserted_device_is_found_by_its_owner_only`
+- `updated_device_stays_revoked`
+- `inserted_cipher_is_found_by_its_owner_only`
+- `cipher_update_at_expected_revision_succeeds`
+- `cipher_update_at_stale_revision_conflicts`
+- `cipher_update_of_another_users_cipher_conflicts`
+- `changes_since_returns_newer_changes_of_the_owner_in_order`
+- `dropped_transaction_is_rolled_back`
+
 Services:
 - `register_creates_user_and_first_device`
 - `register_with_existing_email_fails_without_leaking_which_field`
