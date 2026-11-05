@@ -11,6 +11,8 @@ pub mod health;
 pub mod ids;
 pub mod ports;
 pub mod revision;
+#[cfg(any(test, feature = "testing"))]
+pub mod testing;
 pub mod time;
 
 pub use email::Email;

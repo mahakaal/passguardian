@@ -12,6 +12,10 @@ publish = false
 [lints]
 workspace = true
 
+[features]
+# In-memory fakes and the contract test suite, for other crates' tests (see `testing`).
+testing = []
+
 # RULE: this crate must not depend on axum, sqlx, hyper, reqwest or tokio with I/O.
 # The rule is enforced by scripts/check-layering.sh in CI.
 [dependencies]
