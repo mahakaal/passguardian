@@ -25,6 +25,11 @@ impl IntoResponse for ApiError {
                 "invalid_request",
                 "the request contains an invalid value",
             ),
+            DomainError::Conflict => (
+                StatusCode::CONFLICT,
+                "conflict",
+                "the request conflicts with the current state",
+            ),
             DomainError::RevisionOverflow => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "internal",
@@ -64,6 +69,11 @@ mod tests {
         ] {
             assert_eq!(status_of(error), StatusCode::BAD_REQUEST);
         }
+    }
+
+    #[test]
+    fn conflict_maps_to_409() {
+        assert_eq!(status_of(DomainError::Conflict), StatusCode::CONFLICT);
     }
 
     #[test]

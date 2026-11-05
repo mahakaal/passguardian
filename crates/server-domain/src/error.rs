@@ -17,6 +17,9 @@ pub enum DomainError {
     /// A name is empty, too long or otherwise not acceptable.
     #[error("invalid name")]
     InvalidName,
+    /// The change clashes with existing data: a duplicate, or a stale revision.
+    #[error("conflict")]
+    Conflict,
     /// A revision counter cannot be incremented any further.
     #[error("revision overflow")]
     RevisionOverflow,
