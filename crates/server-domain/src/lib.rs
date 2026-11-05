@@ -11,6 +11,7 @@ pub mod health;
 pub mod ids;
 pub mod ports;
 pub mod revision;
+pub mod time;
 
 pub use email::Email;
 pub use entities::{Cipher, Device, Folder, User};
@@ -18,3 +19,4 @@ pub use error::DomainError;
 pub use health::{HealthService, HealthStatus};
 pub use ids::{CipherId, DeviceId, FolderId, UserId};
 pub use revision::Revision;
+pub use time::Timestamp;
