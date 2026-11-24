@@ -1,5 +1,6 @@
 //! What the handlers share: the services, the clock and the token signer.
 
+use std::future::{ready, Future};
 use std::sync::Arc;
 
 use axum::extract::{FromRequest, FromRequestParts, Request};
@@ -69,19 +70,32 @@ where
 {
     type Rejection = ApiError;
 
-    async fn from_request_parts(
+    fn from_request_parts(
         parts: &mut Parts,
         state: &Arc<AppState<U, C, G>>,
-    ) -> Result<Self, Self::Rejection> {
-        let token = parts
-            .headers
-            .get(header::AUTHORIZATION)
-            .and_then(|value| value.to_str().ok())
-            .and_then(|value| value.strip_prefix("Bearer "))
-            .ok_or(DomainError::InvalidCredentials)?;
-        let claims = state
-            .signer
-            .verify(token, TokenKind::Access, state.clock.now())?;
-        Ok(Self(claims))
+    ) -> impl Future<Output = Result<Self, Self::Rejection>> + Send {
+        // Nothing to wait for: the token is checked right away.
+        ready(authenticate(parts, state))
     }
+}
+
+fn authenticate<U, C, G>(
+    parts: &Parts,
+    state: &AppState<U, C, G>,
+) -> Result<Authenticated, ApiError>
+where
+    U: Backend,
+    C: Clock + Clone + 'static,
+    G: IdGenerator + 'static,
+{
+    let token = parts
+        .headers
+        .get(header::AUTHORIZATION)
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| value.strip_prefix("Bearer "))
+        .ok_or(DomainError::InvalidCredentials)?;
+    let claims = state
+        .signer
+        .verify(token, TokenKind::Access, state.clock.now())?;
+    Ok(Authenticated(claims))
 }
