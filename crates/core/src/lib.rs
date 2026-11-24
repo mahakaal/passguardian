@@ -7,6 +7,7 @@
 //! encryption, vault format, generator and TOTP follow.
 
 mod aead;
+pub mod auth;
 pub mod error;
 pub mod format;
 pub mod generator;
@@ -15,6 +16,7 @@ pub mod kdf;
 pub mod totp;
 pub mod vault_key;
 
+pub use auth::AuthKey;
 pub use error::CryptoError;
 pub use format::{FormatError, VaultDocument, VaultRecord};
 pub use item::{decrypt_item, encrypt_item, EncryptedItem};

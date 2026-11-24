@@ -1,9 +1,12 @@
 //! Mapping `DomainError` → HTTP response. The single place where this translation happens.
+//!
+//! Bodies are fixed texts: they never echo the request, a storage message or a stack trace.
 
 use axum::{http::StatusCode, response::IntoResponse, response::Response, Json};
 use passguardian_proto::ApiErrorBody;
 use passguardian_server_domain::DomainError;
 
+#[derive(Debug)]
 pub(crate) struct ApiError(DomainError);
 
 impl From<DomainError> for ApiError {
@@ -20,14 +23,6 @@ impl IntoResponse for ApiError {
                 "unavailable",
                 "service temporarily unavailable",
             ),
-            DomainError::InvalidId
-            | DomainError::InvalidEmail
-            | DomainError::InvalidName
-            | DomainError::InvalidInput => (
-                StatusCode::BAD_REQUEST,
-                "invalid_request",
-                "the request contains an invalid value",
-            ),
             DomainError::InvalidCredentials => (
                 StatusCode::UNAUTHORIZED,
                 "invalid_credentials",
@@ -43,6 +38,14 @@ impl IntoResponse for ApiError {
                 StatusCode::CONFLICT,
                 "conflict",
                 "the request conflicts with the current state",
+            ),
+            DomainError::InvalidId
+            | DomainError::InvalidEmail
+            | DomainError::InvalidName
+            | DomainError::InvalidInput => (
+                StatusCode::BAD_REQUEST,
+                "invalid_request",
+                "the request contains an invalid value",
             ),
             DomainError::RevisionOverflow => (
                 StatusCode::INTERNAL_SERVER_ERROR,
@@ -80,6 +83,7 @@ mod tests {
             DomainError::InvalidId,
             DomainError::InvalidEmail,
             DomainError::InvalidName,
+            DomainError::InvalidInput,
         ] {
             assert_eq!(status_of(error), StatusCode::BAD_REQUEST);
         }

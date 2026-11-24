@@ -1,67 +1,55 @@
 //! PassGuardian server HTTP layer.
 //!
 //! Handlers contain no logic: they validate input, call a domain service
-//! and map the result (or the error) to an HTTP response.
+//! and map the result (or the error) to an HTTP response. See ADR 0009 for the endpoints.
 
 mod error;
 mod health;
+mod routes;
+mod state;
+pub mod tokens;
 
 use std::sync::Arc;
 
-use axum::{routing::get, Router};
-use passguardian_server_domain::{ports::StorageProbe, HealthService};
+use axum::extract::DefaultBodyLimit;
+use axum::routing::{delete, get, post, put};
+use axum::Router;
+use passguardian_server_domain::ports::{Clock, IdGenerator};
+use passguardian_server_domain::DomainError;
 
-/// Builds the API v1 router, generic over storage.
-pub fn router<S>(health: HealthService<S>) -> Router
-where
-    S: StorageProbe + 'static,
-{
-    Router::new()
-        .route("/api/v1/health", get(health::get_health::<S>))
-        .with_state(Arc::new(health))
+use crate::error::ApiError;
+pub use state::{AppState, Backend};
+
+/// Largest request body accepted: an encrypted item is small, a megabyte is generous.
+const MAX_BODY_BYTES: usize = 1024 * 1024;
+
+async fn not_found() -> ApiError {
+    ApiError::from(DomainError::NotFound)
 }
 
-#[cfg(test)]
-mod tests {
-    use std::future::{ready, Future};
-
-    use axum::{body::Body, http::Request, http::StatusCode};
-    use http_body_util::BodyExt;
-    use passguardian_proto::HealthResponse;
-    use passguardian_server_data::NoopStorage;
-    use passguardian_server_domain::DomainError;
-    use tower::ServiceExt;
-
-    use super::*;
-
-    struct Down;
-
-    impl StorageProbe for Down {
-        fn ping(&self) -> impl Future<Output = Result<(), DomainError>> + Send {
-            ready(Err(DomainError::Unavailable))
-        }
-    }
-
-    #[tokio::test]
-    async fn health_returns_ok_json() {
-        let app = router(HealthService::new(NoopStorage));
-        let res = app
-            .oneshot(Request::get("/api/v1/health").body(Body::empty()).unwrap())
-            .await
-            .unwrap();
-        assert_eq!(res.status(), StatusCode::OK);
-        let bytes = res.into_body().collect().await.unwrap().to_bytes();
-        let body: HealthResponse = serde_json::from_slice(&bytes).unwrap();
-        assert_eq!(body.status, "ok");
-    }
-
-    #[tokio::test]
-    async fn health_returns_503_when_storage_is_down() {
-        let app = router(HealthService::new(Down));
-        let res = app
-            .oneshot(Request::get("/api/v1/health").body(Body::empty()).unwrap())
-            .await
-            .unwrap();
-        assert_eq!(res.status(), StatusCode::SERVICE_UNAVAILABLE);
-    }
+/// Builds the API v1 router.
+pub fn router<U, C, G>(state: Arc<AppState<U, C, G>>) -> Router
+where
+    U: Backend,
+    C: Clock + Clone + 'static,
+    G: IdGenerator + 'static,
+{
+    Router::new()
+        .route("/api/v1/health", get(health::get_health::<U, C, G>))
+        .route("/api/v1/accounts", post(routes::register::<U, C, G>))
+        .route("/api/v1/login", post(routes::login::<U, C, G>))
+        .route("/api/v1/token", post(routes::refresh_token::<U, C, G>))
+        .route(
+            "/api/v1/devices/{id}",
+            delete(routes::revoke_device::<U, C, G>),
+        )
+        .route("/api/v1/ciphers", post(routes::create_cipher::<U, C, G>))
+        .route(
+            "/api/v1/ciphers/{id}",
+            put(routes::update_cipher::<U, C, G>).delete(routes::delete_cipher::<U, C, G>),
+        )
+        .route("/api/v1/sync", get(routes::sync::<U, C, G>))
+        .fallback(not_found)
+        .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
+        .with_state(state)
 }

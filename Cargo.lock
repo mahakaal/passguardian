@@ -1107,6 +1107,7 @@ dependencies = [
 name = "passguardian-proto"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "serde",
  "serde_json",
 ]
@@ -1116,12 +1117,15 @@ name = "passguardian-server"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "base64",
+ "getrandom 0.3.4",
  "passguardian-server-api",
  "passguardian-server-data",
  "passguardian-server-domain",
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
@@ -1129,13 +1133,17 @@ name = "passguardian-server-api"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "base64",
+ "hmac",
  "http-body-util",
  "passguardian-proto",
- "passguardian-server-data",
  "passguardian-server-domain",
+ "serde",
  "serde_json",
+ "sha2",
  "tokio",
  "tower",
+ "uuid",
 ]
 
 [[package]]
