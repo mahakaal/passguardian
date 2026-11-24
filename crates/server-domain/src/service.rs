@@ -466,7 +466,7 @@ mod tests {
             .await
             .unwrap();
         assert!(tombstone.is_deleted());
-        assert!(tombstone.data().is_empty());
+        assert_eq!(tombstone.data(), []);
 
         let sync = service.sync(user, created.revision()).await.unwrap();
         assert_eq!(sync.changes.len(), 1);
@@ -500,12 +500,8 @@ mod tests {
         let revisions: Vec<u64> = newer.changes.iter().map(|c| c.revision().get()).collect();
         assert_eq!(revisions, vec![2, 3]);
         assert_eq!(newer.revision, Revision::new(3));
-        assert!(service
-            .sync(user, Revision::new(3))
-            .await
-            .unwrap()
-            .changes
-            .is_empty());
+        let nothing_new = service.sync(user, Revision::new(3)).await.unwrap();
+        assert_eq!(nothing_new.changes, []);
     }
 
     #[tokio::test]
@@ -519,12 +515,8 @@ mod tests {
             .unwrap();
 
         // Bob sees nothing of Alice's, and cannot touch it.
-        assert!(service
-            .sync(bob, Revision::ZERO)
-            .await
-            .unwrap()
-            .changes
-            .is_empty());
+        let seen_by_bob = service.sync(bob, Revision::ZERO).await.unwrap();
+        assert_eq!(seen_by_bob.changes, []);
         assert_eq!(
             service
                 .update_cipher(bob, cipher_id(1), secret.revision(), None, vec![0])
