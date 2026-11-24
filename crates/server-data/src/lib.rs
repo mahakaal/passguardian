@@ -6,6 +6,9 @@
 //!
 //! Roadmap: Sprint 3 adds PostgreSQL and migrations.
 
+mod pg;
+pub use pg::{PgStore, PgTransaction};
+
 use std::future::{ready, Future};
 
 use passguardian_server_domain::{ports::StorageProbe, DomainError};
