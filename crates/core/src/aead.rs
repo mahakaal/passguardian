@@ -42,7 +42,7 @@ pub(crate) fn seal(
     let cipher = XChaCha20Poly1305::new_from_slice(key).map_err(|_| CryptoError::Encryption)?;
     let ciphertext = cipher
         .encrypt(
-            XNonce::from_slice(&nonce),
+            &XNonce::from(nonce),
             Payload {
                 msg: plaintext,
                 aad,
@@ -66,10 +66,11 @@ pub(crate) fn open(
         return Err(CryptoError::MalformedCiphertext);
     }
     let (nonce, ciphertext) = sealed.split_at(NONCE_LEN);
+    let nonce = XNonce::try_from(nonce).map_err(|_| CryptoError::MalformedCiphertext)?;
     let cipher = XChaCha20Poly1305::new_from_slice(key).map_err(|_| CryptoError::Decryption)?;
     cipher
         .decrypt(
-            XNonce::from_slice(nonce),
+            &nonce,
             Payload {
                 msg: ciphertext,
                 aad,

@@ -6,7 +6,7 @@
 //! device has not been revoked (checked by the domain at refresh time).
 
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, KeyInit, Mac};
 use passguardian_server_domain::{DeviceId, DomainError, Timestamp, UserId};
 use sha2::Sha256;
 
