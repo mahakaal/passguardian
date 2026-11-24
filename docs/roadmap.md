@@ -74,8 +74,8 @@ A sprint ends when its exit criteria are met and CI is green.
 **Exit:** two CLI clients converge under concurrent writes.
 
 ## Sprint 7 – Deployment and operations
-- S7-1 Multi-stage Dockerfile, non-root user, minimal image
-- S7-2 `docker-compose.yml` for self-hosting
+- ✅ S7-1 Multi-stage Dockerfile, non-root user, minimal image
+- ✅ S7-2 `docker-compose.yml` for self-hosting
 - S7-3 Helm chart (Postgres operator, TLS ingress, probes, backups)
 - S7-4 Metrics and tracing (OpenTelemetry/Prometheus), backup/restore guide
 - S7-5 Signed releases, SBOM, reproducible builds

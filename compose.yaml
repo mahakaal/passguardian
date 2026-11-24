@@ -1,0 +1,36 @@
+# Self-hosting: PassGuardian server + PostgreSQL. See docs/self-hosting.md.
+#
+#   cp .env.example .env     # then edit the three secrets
+#   docker compose up -d
+#
+# The server listens on 127.0.0.1:8080 only: put a reverse proxy with TLS in front of it.
+services:
+  server:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://passguardian:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/passguardian
+      PASSGUARDIAN_TOKEN_SECRET: ${PASSGUARDIAN_TOKEN_SECRET:?set PASSGUARDIAN_TOKEN_SECRET in .env}
+      RUST_LOG: info
+    ports: ["127.0.0.1:8080:8080"]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: passguardian
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: passguardian
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U passguardian"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  pgdata:
