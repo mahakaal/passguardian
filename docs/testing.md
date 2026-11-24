@@ -88,7 +88,7 @@ Without the variable they are skipped; with `CI` set they fail instead.
 
 ## Sprint 4 – API (write first)
 - `health_returns_200_ok_json` / `health_returns_503_when_storage_down` (already present).
-- `unknown_route_returns_404_problem_json`.
+- `unknown_route_returns_404_error_body`.
 - `malformed_json_returns_400_without_echoing_input`.
 - `protected_route_without_token_returns_401`.
 - `error_bodies_never_contain_internal_details`.
