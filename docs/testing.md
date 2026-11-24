@@ -65,6 +65,10 @@ Services:
 - `user_cannot_read_or_modify_another_users_ciphers`
 - `revoked_device_cannot_refresh_token`
 
+Running the data-layer tests locally: `docker compose -f compose.dev.yaml up -d`, then set
+`TEST_DATABASE_URL=postgres://passguardian:passguardian@localhost:5432/passguardian_test`.
+Without the variable they are skipped; with `CI` set they fail instead.
+
 ## Sprint 3 – Data: PostgreSQL and migrations (write first)
 **Migrations**
 - `migrations_apply_on_empty_database`

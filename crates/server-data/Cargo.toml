@@ -14,6 +14,11 @@ workspace = true
 
 [dependencies]
 passguardian-server-domain = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true, features = ["sync"] }
+uuid = { workspace = true }
 
 [dev-dependencies]
+passguardian-server-domain = { workspace = true, features = ["testing"] }
 tokio = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }

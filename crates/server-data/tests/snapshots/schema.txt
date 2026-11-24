@@ -1,0 +1,30 @@
+column ciphers.id uuid nullable=NO default=
+column ciphers.user_id uuid nullable=NO default=
+column ciphers.folder_id uuid nullable=YES default=
+column ciphers.data bytea nullable=NO default=
+column ciphers.revision bigint nullable=NO default=
+column ciphers.deleted boolean nullable=NO default=false
+column devices.id uuid nullable=NO default=
+column devices.user_id uuid nullable=NO default=
+column devices.name text nullable=NO default=
+column devices.revoked boolean nullable=NO default=false
+column devices.created_at timestamp with time zone nullable=NO default=now()
+column folders.id uuid nullable=NO default=
+column folders.user_id uuid nullable=NO default=
+column folders.name bytea nullable=NO default=
+column user_revision.user_id uuid nullable=NO default=
+column user_revision.revision bigint nullable=NO default=
+column users.id uuid nullable=NO default=
+column users.email text nullable=NO default=
+column users.auth_hash bytea nullable=NO default=
+column users.key_envelope bytea nullable=NO default=
+column users.created_at timestamp with time zone nullable=NO default=now()
+index CREATE INDEX ciphers_user_revision_idx ON public.ciphers USING btree (user_id, revision)
+index CREATE INDEX devices_user_id_idx ON public.devices USING btree (user_id)
+index CREATE INDEX folders_user_id_idx ON public.folders USING btree (user_id)
+index CREATE UNIQUE INDEX ciphers_pkey ON public.ciphers USING btree (id)
+index CREATE UNIQUE INDEX devices_pkey ON public.devices USING btree (id)
+index CREATE UNIQUE INDEX folders_pkey ON public.folders USING btree (id)
+index CREATE UNIQUE INDEX user_revision_pkey ON public.user_revision USING btree (user_id)
+index CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)
+index CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)
