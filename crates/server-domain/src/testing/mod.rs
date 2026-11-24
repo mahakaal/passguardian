@@ -8,7 +8,10 @@ mod memory;
 
 pub use memory::{InMemoryStore, InMemoryTransaction};
 
-use crate::ports::Clock;
+use std::sync::atomic::{AtomicI64, AtomicU64, Ordering};
+use std::sync::Arc;
+
+use crate::ports::{Clock, IdGenerator};
 use crate::Timestamp;
 
 /// A clock that always returns the same time.
@@ -26,6 +29,47 @@ impl FixedClock {
 impl Clock for FixedClock {
     fn now(&self) -> Timestamp {
         self.0
+    }
+}
+
+/// A clock that only moves when told to. Clones share the same time.
+#[derive(Debug, Clone)]
+pub struct ManualClock(Arc<AtomicI64>);
+
+impl ManualClock {
+    /// Creates a clock set to `now`.
+    #[must_use]
+    pub fn new(now: Timestamp) -> Self {
+        Self(Arc::new(AtomicI64::new(now.as_unix_seconds())))
+    }
+
+    /// Moves the clock forward.
+    pub fn advance(&self, seconds: i64) {
+        self.0.fetch_add(seconds, Ordering::SeqCst);
+    }
+}
+
+impl Clock for ManualClock {
+    fn now(&self) -> Timestamp {
+        Timestamp::from_unix_seconds(self.0.load(Ordering::SeqCst))
+    }
+}
+
+/// Hands out the UUIDs 1, 2, 3, ... (starting above the small numbers tests use by hand).
+#[derive(Debug, Default)]
+pub struct SequentialIds(AtomicU64);
+
+impl SequentialIds {
+    /// Creates a generator starting at 1000.
+    #[must_use]
+    pub fn new() -> Self {
+        Self(AtomicU64::new(1000))
+    }
+}
+
+impl IdGenerator for SequentialIds {
+    fn new_uuid(&self) -> uuid::Uuid {
+        uuid::Uuid::from_u128(u128::from(self.0.fetch_add(1, Ordering::SeqCst)))
     }
 }
 

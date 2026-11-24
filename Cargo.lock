@@ -664,6 +664,8 @@ dependencies = [
 name = "passguardian-server-domain"
 version = "0.1.0"
 dependencies = [
+ "sha2",
+ "subtle",
  "thiserror",
  "tokio",
  "uuid",

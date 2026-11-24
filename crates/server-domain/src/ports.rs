@@ -21,6 +21,12 @@ pub trait Clock: Send + Sync {
     fn now(&self) -> Timestamp;
 }
 
+/// Source of new identifiers (random UUIDs in production, a counter in tests).
+pub trait IdGenerator: Send + Sync {
+    /// A new, never used UUID.
+    fn new_uuid(&self) -> uuid::Uuid;
+}
+
 /// Storage of user accounts and of each user's revision counter.
 pub trait UserRepository: Send + Sync {
     /// Stores a new user. Fails with [`DomainError::Conflict`] if the email is taken.
