@@ -11,7 +11,7 @@
 - A pull request must pass the required checks: `fmt, clippy, test, layering`, `cargo-deny` and `DCO (Signed-off-by)`.
 - **Unfinished work is merged in small steps, but never exposed.** New code that is not ready stays unused (not wired to an API, command or UI) or sits behind a switch, instead of waiting on a branch.
 - **Releases are tags** (`v*`) on `main`. A release branch is created only if a fix for an old version is ever needed.
-- **Sprints and milestones stay in Jira.** They are not branches. Commits and pull requests refer to the task with a `Refs: PG-nn` footer.
+- **Sprints and milestones live in `docs/roadmap.md`.** They are not branches. Commits and pull requests may refer to a roadmap task ID (for example `S4-5`) in their description.
 - If `main` breaks, fixing or reverting it comes before anything else.
 
 **Alternatives considered.**

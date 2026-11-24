@@ -18,7 +18,7 @@ The project is **trunk-based** ([ADR 0006](docs/adr/0006-trunk-based-development
    ```bash
    bash scripts/verify.sh   # fmt, clippy, tests, layering, cargo-deny
    ```
-3. Open a **small, focused pull request** against `main`. Its title is a Conventional Commit; end the description with `Refs: PG-nn` when there is a Jira task.
+3. Open a **small, focused pull request** against `main`. Its title is a Conventional Commit; mention the roadmap task ID (for example `S4-5`) in the description when there is one.
 4. Merge when the required checks are green (`fmt, clippy, test, layering`, `cargo-deny`, `DCO (Signed-off-by)`): squash for one logical change, rebase when each commit stands on its own.
 5. Unfinished work is merged in small steps but not exposed (not wired to an API, command or UI).
 

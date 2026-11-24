@@ -1,7 +1,7 @@
 # Sprint roadmap
 
 Indicative sprints of ~2 weeks (a part-time personal project: dates are estimates, not commitments).
-Every task has an ID, mirrored in Jira (project PG). **Rule: the tests listed in `docs/testing.md` are written before the code.**
+Every task has an ID, tracked here: a finished task is marked ✅, so this file is the single source of truth (Jira is no longer used). **Rule: the tests listed in `docs/testing.md` are written before the code.**
 A sprint ends when its exit criteria are met and CI is green.
 
 ## Sprint 0 – Foundations ✅ (done)
@@ -14,44 +14,44 @@ A sprint ends when its exit criteria are met and CI is green.
 
 **Exit:** build, lint and tests green; the server answers on `/api/v1/health`.
 
-## Sprint 1 – Cryptographic core (`core`)
-- S1-1 Tests first, then code: Argon2id key derivation with known vectors
-- S1-2 Random vault key and wrap/unwrap with the master key
-- S1-3 Item encryption (XChaCha20-Poly1305), tampered ciphertext rejected, unique nonces
-- S1-4 Versioned vault format + migration between versions
-- S1-5 Password/passphrase generator (no modulo bias)
-- S1-6 TOTP with RFC 6238 vectors
-- S1-7 ADR on Argon2id parameters and the vault format
+## Sprint 1 – Cryptographic core (`core`) ✅ (done)
+- ✅ S1-1 Tests first, then code: Argon2id key derivation with known vectors
+- ✅ S1-2 Random vault key and wrap/unwrap with the master key
+- ✅ S1-3 Item encryption (XChaCha20-Poly1305), tampered ciphertext rejected, unique nonces
+- ✅ S1-4 Versioned vault format + migration between versions
+- ✅ S1-5 Password/passphrase generator (no modulo bias)
+- ✅ S1-6 TOTP with RFC 6238 vectors
+- ✅ S1-7 ADR on Argon2id parameters and the vault format
 
 **Exit:** all the "Sprint 1" tests in `docs/testing.md` green; secrets zeroized.
 
-## Sprint 2 – Server domain (`server-domain`)
-- S2-1 Entities (`User`, `Device`, `Cipher`, `Folder`) and typed identifiers
-- S2-2 Ports: `UserRepository`, `DeviceRepository`, `CipherRepository`, `Clock`, `UnitOfWork`
-- S2-3 Services: registration, device management, cipher CRUD, sync with revisions and tombstones
-- S2-4 In-memory fake repositories + reusable **contract test suite**
-- S2-5 Isolation between users (no access to other people's data)
+## Sprint 2 – Server domain (`server-domain`) ✅ (done)
+- ✅ S2-1 Entities (`User`, `Device`, `Cipher`, `Folder`) and typed identifiers
+- ✅ S2-2 Ports: `UserRepository`, `DeviceRepository`, `CipherRepository`, `Clock`, `UnitOfWork`
+- ✅ S2-3 Services: registration, device management, cipher CRUD, sync with revisions and tombstones
+- ✅ S2-4 In-memory fake repositories + reusable **contract test suite**
+- ✅ S2-5 Isolation between users (no access to other people's data)
 
 **Exit:** all the "Sprint 2" tests green, no I/O in the crate (checked by `check-layering.sh`).
 
-## Sprint 3 – PostgreSQL and migrations (`server-data`)
-- S3-1 Development environment: `docker compose` with Postgres, `TEST_DATABASE_URL`
-- S3-2 Initial `sqlx` migrations (users, devices, ciphers, folders, user_revision)
-- S3-3 Migration tests (from empty, idempotency, checksums, schema snapshot, upgrade from previous release)
-- S3-4 Repository implementations with sqlx → domain error mapping
-- S3-5 Contract tests also run on Postgres; concurrency and monotonic revisions
-- S3-6 Evaluate and decide on Row-Level Security (ADR)
-- S3-7 `cargo sqlx prepare` offline mode and a CI check
+## Sprint 3 – PostgreSQL and migrations (`server-data`) ✅ (done)
+- ✅ S3-1 Development environment: `docker compose` with Postgres, `TEST_DATABASE_URL`
+- ✅ S3-2 Initial `sqlx` migrations (users, devices, ciphers, folders, user_revision)
+- ✅ S3-3 Migration tests (from empty, idempotency, checksums, schema snapshot, upgrade from previous release)
+- ✅ S3-4 Repository implementations with sqlx → domain error mapping
+- ✅ S3-5 Contract tests also run on Postgres; concurrency and monotonic revisions
+- ✅ S3-6 Evaluate and decide on Row-Level Security (ADR)
+- ✅ S3-7 `cargo sqlx prepare` offline mode and a CI check
 
 **Exit:** all the "Sprint 3" tests green in CI with Postgres; migrations applied at startup.
 
-## Sprint 4 – HTTP API (`server-api`) and CLI
-- S4-1 `/api/v1` router: register, login (temporary), devices, ciphers, sync
-- S4-2 Uniform errors (problem+json), 404/400/401 without internal details
+## Sprint 4 – HTTP API (`server-api`) and CLI (core done, OpenAPI and TS client open)
+- ✅ S4-1 `/api/v1` router: register, login (temporary), devices, ciphers, sync
+- ✅ S4-2 Uniform errors (problem+json), 404/400/401 without internal details
 - S4-3 OpenAPI generated from code + snapshot in the repo
 - S4-4 Generated TypeScript client
-- S4-5 CLI commands (register, login, add, list, sync)
-- S4-6 End-to-end CLI test against server + Postgres
+- ✅ S4-5 CLI commands (register, login, add, list, sync)
+- ✅ S4-6 End-to-end CLI test against server + Postgres
 
 **Exit:** all the "Sprint 4" tests green; end-to-end flow runnable from the CLI.
 
