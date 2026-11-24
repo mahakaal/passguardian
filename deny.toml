@@ -20,6 +20,7 @@ allow = [
   "MPL-2.0",
   "AGPL-3.0-or-later",
   "CC0-1.0",
+  "CDLA-Permissive-2.0", # webpki-roots: the Mozilla root certificates, data only
 ]
 
 [bans]

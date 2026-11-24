@@ -1,6 +1,6 @@
 [package]
 name = "passguardian-cli"
-description = "Command-line client to exercise the core and the server"
+description = "Command-line client for the PassGuardian server"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -12,9 +12,28 @@ publish = false
 [lints]
 workspace = true
 
+[lib]
+name = "passguardian_cli"
+path = "src/lib.rs"
+
 [[bin]]
 name = "passguardian"
 path = "src/main.rs"
 
 [dependencies]
 passguardian-core = { workspace = true }
+passguardian-proto = { workspace = true }
+base64 = { workspace = true }
+clap = { workspace = true }
+rpassword = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+ureq = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+
+[dev-dependencies]
+passguardian-server-api = { workspace = true }
+passguardian-server-domain = { workspace = true, features = ["testing"] }
+axum = { workspace = true }
+tokio = { workspace = true }

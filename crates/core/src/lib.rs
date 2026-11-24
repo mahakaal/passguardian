@@ -16,7 +16,7 @@ pub mod kdf;
 pub mod totp;
 pub mod vault_key;
 
-pub use auth::AuthKey;
+pub use auth::{login_salt, AuthKey};
 pub use error::CryptoError;
 pub use format::{FormatError, VaultDocument, VaultRecord};
 pub use item::{decrypt_item, encrypt_item, EncryptedItem};

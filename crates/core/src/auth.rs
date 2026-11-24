@@ -4,7 +4,7 @@
 //! which is what the server stores) gives no way back to the master key or the vault key.
 
 use hmac::{Hmac, Mac};
-use sha2::Sha256;
+use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
 use crate::error::CryptoError;
@@ -12,6 +12,19 @@ use crate::kdf::{MasterKey, KEY_LEN};
 
 /// Purpose label mixed into the derivation.
 const AUTH_CONTEXT: &[u8] = b"passguardian/v1/auth-key";
+
+/// Salt for the master key of an account: a hash of its normalised email.
+///
+/// A new device has to derive the master key before it can read anything from the server,
+/// so the salt must be computable from what the user types (ADR 0009, limitation 1).
+#[must_use]
+pub fn login_salt(email: &str) -> [u8; KEY_LEN] {
+    Sha256::new()
+        .chain_update(b"passguardian/v1/login-salt")
+        .chain_update(email.trim().to_lowercase().as_bytes())
+        .finalize()
+        .into()
+}
 
 /// The key sent to the server at registration and login. Wiped from memory when dropped.
 #[derive(Zeroize, ZeroizeOnDrop)]
@@ -59,6 +72,19 @@ mod tests {
 
     fn master(password: &[u8]) -> MasterKey {
         derive_master_key(password, b"0123456789abcdef", &FAST).unwrap()
+    }
+
+    #[test]
+    fn login_salt_ignores_case_and_surrounding_spaces_but_not_the_address() {
+        assert_eq!(
+            login_salt("Alice@Example.com "),
+            login_salt("alice@example.com")
+        );
+        assert_ne!(
+            login_salt("alice@example.com"),
+            login_salt("bob@example.com")
+        );
+        assert!(login_salt("a@b.it").len() >= crate::kdf::MIN_SALT_LEN);
     }
 
     #[test]
