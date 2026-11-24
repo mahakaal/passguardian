@@ -3,7 +3,7 @@
 //! It is derived from the master key with a different label, so knowing it (or its hash,
 //! which is what the server stores) gives no way back to the master key or the vault key.
 
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, KeyInit, Mac};
 use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, ZeroizeOnDrop};
 

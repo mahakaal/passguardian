@@ -52,7 +52,7 @@ pub enum TotpError {
 /// over several types, which is more advanced Rust than the exercise needs.
 fn hmac_digest(algorithm: Algorithm, secret: &[u8], message: &[u8]) -> Result<Vec<u8>, TotpError> {
     fn run<M: Mac + KeyInit>(secret: &[u8], message: &[u8]) -> Result<Vec<u8>, TotpError> {
-        let mut mac = <M as Mac>::new_from_slice(secret).map_err(|_| TotpError::InvalidKey)?;
+        let mut mac = <M as KeyInit>::new_from_slice(secret).map_err(|_| TotpError::InvalidKey)?;
         mac.update(message);
         Ok(mac.finalize().into_bytes().to_vec())
     }
