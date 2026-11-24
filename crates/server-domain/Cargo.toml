@@ -19,6 +19,8 @@ testing = []
 # RULE: this crate must not depend on axum, sqlx, hyper, reqwest or tokio with I/O.
 # The rule is enforced by scripts/check-layering.sh in CI.
 [dependencies]
+sha2 = { workspace = true }
+subtle = { workspace = true }
 thiserror = { workspace = true }
 uuid = { workspace = true }
 

@@ -20,11 +20,25 @@ impl IntoResponse for ApiError {
                 "unavailable",
                 "service temporarily unavailable",
             ),
-            DomainError::InvalidId | DomainError::InvalidEmail | DomainError::InvalidName => (
+            DomainError::InvalidId
+            | DomainError::InvalidEmail
+            | DomainError::InvalidName
+            | DomainError::InvalidInput => (
                 StatusCode::BAD_REQUEST,
                 "invalid_request",
                 "the request contains an invalid value",
             ),
+            DomainError::InvalidCredentials => (
+                StatusCode::UNAUTHORIZED,
+                "invalid_credentials",
+                "invalid credentials",
+            ),
+            DomainError::RateLimited => (
+                StatusCode::TOO_MANY_REQUESTS,
+                "rate_limited",
+                "too many attempts, try again later",
+            ),
+            DomainError::NotFound => (StatusCode::NOT_FOUND, "not_found", "not found"),
             DomainError::Conflict => (
                 StatusCode::CONFLICT,
                 "conflict",
@@ -69,6 +83,19 @@ mod tests {
         ] {
             assert_eq!(status_of(error), StatusCode::BAD_REQUEST);
         }
+    }
+
+    #[test]
+    fn authentication_and_lookup_errors_map_to_401_429_404() {
+        assert_eq!(
+            status_of(DomainError::InvalidCredentials),
+            StatusCode::UNAUTHORIZED
+        );
+        assert_eq!(
+            status_of(DomainError::RateLimited),
+            StatusCode::TOO_MANY_REQUESTS
+        );
+        assert_eq!(status_of(DomainError::NotFound), StatusCode::NOT_FOUND);
     }
 
     #[test]

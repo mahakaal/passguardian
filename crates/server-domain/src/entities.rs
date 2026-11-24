@@ -13,13 +13,41 @@ pub const MAX_DEVICE_NAME_LEN: usize = 64;
 pub struct User {
     id: UserId,
     email: Email,
+    auth_hash: Vec<u8>,
+    key_envelope: Vec<u8>,
 }
 
 impl User {
     /// Creates a user.
     #[must_use]
     pub fn new(id: UserId, email: Email) -> Self {
-        Self { id, email }
+        Self {
+            id,
+            email,
+            auth_hash: Vec::new(),
+            key_envelope: Vec::new(),
+        }
+    }
+
+    /// Sets the login verifier and the client's key envelope (the KDF parameters, the salt
+    /// and the wrapped vault key, as the client serialised them). Both are opaque here.
+    #[must_use]
+    pub fn with_credentials(mut self, auth_hash: Vec<u8>, key_envelope: Vec<u8>) -> Self {
+        self.auth_hash = auth_hash;
+        self.key_envelope = key_envelope;
+        self
+    }
+
+    /// The hash the server keeps to check the login secret.
+    #[must_use]
+    pub fn auth_hash(&self) -> &[u8] {
+        &self.auth_hash
+    }
+
+    /// The opaque key envelope returned to the client after login.
+    #[must_use]
+    pub fn key_envelope(&self) -> &[u8] {
+        &self.key_envelope
     }
 
     /// The user's identifier.
@@ -160,6 +188,13 @@ impl Cipher {
         }
     }
 
+    /// Replaces the payload and the folder, recording the new `revision`.
+    pub fn update(&mut self, folder_id: Option<FolderId>, data: Vec<u8>, revision: Revision) {
+        self.folder_id = folder_id;
+        self.data = data;
+        self.revision = revision;
+    }
+
     /// Turns the cipher into a tombstone changed at `revision`: the data is dropped and the
     /// cipher no longer belongs to a folder.
     pub fn delete(&mut self, revision: Revision) {
@@ -292,6 +327,24 @@ mod tests {
         assert!(!cipher.is_deleted());
         assert_eq!(cipher.data(), &[1, 2, 3]);
         assert_eq!(cipher.revision(), Revision::new(5));
+    }
+
+    #[test]
+    fn updating_a_cipher_replaces_data_folder_and_revision() {
+        let mut cipher = cipher();
+        cipher.update(None, vec![7], Revision::new(9));
+        assert_eq!(cipher.data(), &[7]);
+        assert_eq!(cipher.folder_id(), None);
+        assert_eq!(cipher.revision(), Revision::new(9));
+        assert!(!cipher.is_deleted());
+    }
+
+    #[test]
+    fn user_credentials_are_kept() {
+        let user = User::new(user_id(), Email::parse("a@b.it").unwrap())
+            .with_credentials(vec![1], vec![2, 3]);
+        assert_eq!(user.auth_hash(), &[1]);
+        assert_eq!(user.key_envelope(), &[2, 3]);
     }
 
     #[test]
