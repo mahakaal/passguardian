@@ -17,3 +17,4 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versio
 - HTTP API v1 (`passguardian-server-api`): accounts, login, token refresh, devices, ciphers and sync. ADR 0009.
 - Command-line client (`passguardian`): register, login, logout, add, list, get, delete, status and generate, with an end-to-end test against the real router.
 - The server binary now serves the API on PostgreSQL (`DATABASE_URL`, `PASSGUARDIAN_BIND`, `PASSGUARDIAN_TOKEN_SECRET`).
+- Self-hosting: multi-stage `Dockerfile` (non-root, distroless), `compose.yaml` with PostgreSQL and `docs/self-hosting.md` with backup and restore.
